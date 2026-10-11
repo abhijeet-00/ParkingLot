@@ -20,12 +20,15 @@ public class ParkingLotServiceImpl implements  ParkingLotService {
         ticket.setCustomer(customer);
         ticket.setGate(gate);
         ticket.setEntryTime(new Date());
-        ParkingSpot parkingSpot = assignParkingSpotStrategy.assignParkingSpot(customer.getVehicle(), parkingSpotRepository.findAll());
-        if (parkingSpot == null) {
-            throw new RuntimeException("No spot available");
+        synchronized (this) {
+            ParkingSpot parkingSpot = assignParkingSpotStrategy.assignParkingSpot(customer.getVehicle(), parkingSpotRepository.findAll());
+            if (parkingSpot == null) {
+                throw new RuntimeException("No spot available");
+            }
+            parkingSpot.setStatus(SpotStatus.OCCUPIED);
+            ticket.setParkingSpot(parkingSpot);
         }
-        parkingSpot.setStatus(SpotStatus.OCCUPIED);
-        ticket.setParkingSpot(parkingSpot);
+        System.out.println("Ticket issued: " + ticket);
         return ticket;
     }
 }
