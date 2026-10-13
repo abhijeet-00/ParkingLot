@@ -16,6 +16,9 @@ public class ParkingLotServiceImpl implements  ParkingLotService {
     }
     @Override
     public Ticket issueTicket(Customer customer, Gate gate) {
+        if (customer == null || gate == null) {
+            throw new IllegalArgumentException("Customer or Gate should not be null");
+        }
         Ticket ticket = new Ticket();
         ticket.setCustomer(customer);
         ticket.setGate(gate);
